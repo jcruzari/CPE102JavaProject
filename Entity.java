@@ -9,6 +9,10 @@ public class Entity{
       this.rate = rate;
    }   
    
+   public Entity(String name){
+      this.name = name;
+   }
+   
    public void setPosition(Point point){
       this.position = point;
    }
