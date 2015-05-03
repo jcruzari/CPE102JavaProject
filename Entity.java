@@ -2,6 +2,9 @@ public class Entity{
    private String name;
    private Point position;
    private int rate;
+   private int animationRate;
+   private int resourceLimit;
+   private int resourceCount;
 
    public Entity(String name, Point position, int rate){
       this.name = name;
@@ -27,5 +30,17 @@ public class Entity{
 
    public String getName(){
       return this.name;
+   }
+
+   public int getAnimationRate(){
+      return this.animationRate;
+   }
+
+   public void setResourceCount(int n){
+      this.resourceCount = n;
+   }
+
+   public int getResourceCount(){
+      return this.resourceCount;
    }
 }
