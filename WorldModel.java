@@ -27,6 +27,16 @@ public class WorldModel{
          [pt.xCoord()] != null);
    }
 
+   public Entity findNearest(Point pt, Class type){
+      List<Entity> ofType = new LinkedList<Entity>();
+      for(Entity e : this.entities){
+         if(type.isInstance(e)){
+            ofType.add(e);
+         }
+      }
+      return nearestEntity(ofType, pt);
+   }
+
    public void addEntity(Entity e){
       Point pt = e.getPosition();
       Entity oldEntity;
@@ -121,6 +131,40 @@ public class WorldModel{
          }
       }
       return newPt;
+   }
+
+   public boolean minerToOre(Entity e, Ore ore){
+      Point entityPt = e.getPosition();
+      Point orePt = ore.getPosition();
+      if(adjacent(entityPt, orePt)){
+         e.setResourceCount(1 + e.getResourceCount());
+         return true;
+      }
+      return false;
+   }
+
+   public boolean minerToSmith(Entity e, Blacksmith smith){
+      Point entityPt = e.getPosition();
+      Point smithPt = smith.getPosition();
+      if(adjacent(entityPt, smithPt)){
+         smith.setResourceCount(smith.getResourceCount() +
+            e.getResourceCount());
+         e. setResourceCount(0);
+         return true;
+      }
+      return false;
+   }
+
+   public boolean blobToVein(Entity e, Vein vein){
+      entityPt = e.getPosition();
+      veinPt = vein.getPosition();
+
+      if(adjacent(entityPt, veinPt)){
+         return True;
+      }
+      else{
+         
+      }
    }
 
    public Point findOpenAround(Point pt, int distance){
