@@ -9,7 +9,7 @@ public class WorldModel{
    private List<Entity> entities;
    final static int BLOB_RATE_SCALE = 4;
 
-   public WorldModel(int numCols, int numRows, Entity background){
+   public WorldModel(int numCols, int numRows){
       this.numCols = numCols;
       this.numRows = numRows;
       this.backgrounds = new Background[numCols][numRows];
@@ -73,13 +73,17 @@ public class WorldModel{
    }
 
    public void setBackground(Point pt, Background b){
-      if(this.withinBounds){
+      if(this.withinBounds(pt)){
          this.backgrounds[pt.yCoord()][pt.xCoord()] = b;
       }
    }
 
    public Entity getTileOccupant(Point pt){
-      
+      Entity e = null;
+      if(this.withinBounds(pt)){
+         e = this.occupancy[pt.yCoord()][pt.xCoord()];
+      }
+      return e;
    }
 
    public List<Entity> getEntities(){
@@ -87,7 +91,50 @@ public class WorldModel{
    }
 
    public Point nextPosition(Point entityPt, Point destPt){
+      int vert;
       int horiz = sign(destPt.xCoord() - entityPt.xCoord());
+      Point newPt = new Point(entityPt.xCoord() + horiz, entityPt.yCoord());
+      
+      if(horiz == 0 || this.isOccupied(newPt)){
+         vert = sign(destPt.yCoord() - entityPt.yCoord());
+         newPt = new Point(entityPt.xCoord(), entityPt.yCoord() + vert);
+         if(vert == 0 || this.isOccupied(newPt)){
+            newPt = new Point(entityPt.xCoord(), entityPt.yCoord());
+         }
+      }
+      return newPt;
+   }
+
+   public Point blobNextPosition(Point entityPt, Point destPt){
+      int vert;
+      int horiz = sign(destPt.xCoord() - entityPt.xCoord());
+      Point newPt = new Point(entityPt.xCoord() + horiz, entityPt.yCoord());
+
+      if(horiz == 0 || (this.isOccupied(newPt) &&
+         !(getTileOccupant(newPt) instanceof Ore))){
+         vert = sign(destPt.yCoord() - entityPt.yCoord());
+         newPt = new Point(entityPt.xCoord(), entityPt.yCoord() + vert);
+
+         if(vert == 0 || (this.isOccupied(newPt) && 
+            !(getTileOccupant(newPt) instanceof Ore))){
+            newPt = new Point(entityPt.xCoord(), entityPt.yCoord());
+         }
+      }
+      return newPt;
+   }
+
+   public Point findOpenAround(Point pt, int distance){
+      Point newPt;
+      for(int dy = -distance; dy < distance + 1; dy++){
+         for(int dx = -distance; dx < distance + 1; dx++){
+            newPt = new Point(pt.xCoord() + dx, pt.yCoord() + dy);
+
+            if(this.withinBounds(newPt) && !(this.isOccupied(newPt))){
+               return newPt;
+            }
+         }
+      }
+      return null;
    }
 
    //Static methods
@@ -97,28 +144,28 @@ public class WorldModel{
          Math.pow(p1.yCoord() - p2.yCoord(), 2));
    }   
 
-   /*public static Entity nearestEntity(List<Entity> entityDists, Point pt){
-      List<Entity> pair = new LinkedList<Entity>();
-      List<Entity> other = new LinkedList<Entity>();
-      Entity nearest;
+   public static Entity nearestEntity(List<Entity> entityDists, Point pt){
+      Entity nearest = null;
+      Entity other = null;
+      //entityDists = new LinkedList<Entity>();
       if(entityDists.size() > 0){
-         pair.add(entityDists(0));
-         for (other : entityDists){
-            if(other(1) < pair(1)){
-               pair = other;
+         other = entityDists.get(0);
+         for(Entity e : entityDists){
+            if(distanceSq(e.getPosition(), pt) < distanceSq(other.getPosition(),
+               pt)){
+               nearest = e;
             }
          }
-         nearest = pair(0);
       }
       else{
          nearest = null;
       }
       return nearest;
-   }*/
+   }
 
    public static int sign(int x){
       if(x < 0){
-         return -1
+         return -1;
       }
       else if(x > 0){
          return 1;
@@ -127,7 +174,7 @@ public class WorldModel{
    }
 
    public static boolean adjacent(Point pt1, Point pt2){
-      return ((pt1.xCoord() == pt.xCoord() && 
+      return ((pt1.xCoord() == pt2.xCoord() && 
          Math.abs(pt1.yCoord() - pt2.yCoord()) == 1) ||
             (pt1.yCoord() == pt2.yCoord() && Math.abs(pt1.xCoord() - 
                pt2.xCoord()) == 1));
