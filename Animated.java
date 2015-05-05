@@ -4,4 +4,8 @@ public class Animated extends Entity{
       super(name, position, rate);
       this.animationRate = animationRate;
    }
+
+   public int getAnimationRate(){
+      return this.animationRate;
+   }
 }
