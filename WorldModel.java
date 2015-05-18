@@ -1,9 +1,10 @@
 import java.util.List;
 import java.util.LinkedList;
+import processing.core.*;
 
 public class WorldModel{
-   private int numRows;
-   private int numCols;
+   protected int numRows;
+   protected int numCols;
    private Background[][] backgrounds;
    private Entity[][] occupancy;
    private List<Entity> entities;
@@ -82,6 +83,14 @@ public class WorldModel{
       return b;
    }
 
+   public PImage getBackgroundImage(Point pt){
+      PImage b = new PImage();
+      if(this.withinBounds(pt)){
+         b = this.backgrounds[pt.y][pt.x].getImage();
+      }
+      return b;
+   }
+
    public void setBackground(Point pt, Background b){
       if(this.withinBounds(pt)){
          this.backgrounds[pt.yCoord()][pt.xCoord()] = b;
@@ -156,14 +165,14 @@ public class WorldModel{
    }
 
    public boolean blobToVein(Entity e, Vein vein){
-      entityPt = e.getPosition();
-      veinPt = vein.getPosition();
+      Point entityPt = e.getPosition();
+      Point veinPt = vein.getPosition();
 
       if(adjacent(entityPt, veinPt)){
-         return True;
+         return true;
       }
       else{
-         
+         return false;
       }
    }
 
@@ -184,8 +193,8 @@ public class WorldModel{
    //Static methods
 
    public static double distanceSq(Point p1, Point p2){
-      return Math.sqrt(Math.pow(p1.xCoord() - p2.xCoord(), 2) + 
-         Math.pow(p1.yCoord() - p2.yCoord(), 2));
+      return (Math.sqrt(Math.pow(p1.xCoord() - p2.xCoord(), 2) +
+         Math.pow(p1.yCoord() - p2.yCoord(), 2)));
    }   
 
    public static Entity nearestEntity(List<Entity> entityDists, Point pt){
