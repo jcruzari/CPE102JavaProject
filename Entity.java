@@ -12,6 +12,7 @@ public class Entity{
    protected int resourceCount;
    protected List<PImage> imgs = new LinkedList<>();
    protected int currentImg;
+   protected List<Action> pendingActions;
 
    public Entity(String name, Point position, int rate, List<PImage> imgs){
       this.name = name;
